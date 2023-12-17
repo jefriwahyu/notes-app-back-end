@@ -141,15 +141,6 @@ class NotesHandler {
         response.code(error.statusCode);
         return response;
       }
-
-      // Membangkitkan SERVER ERROR !
-      const response = h.response({
-        status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami.',
-      });
-      response.code(500);
-      console.error(error);
-      return response;
     }
   }
 }
