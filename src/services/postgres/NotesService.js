@@ -1,3 +1,5 @@
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable no-empty-function */
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvarianError = require('../../exceptions/InvariantError');
@@ -6,8 +8,9 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 
 class NotesService {
-  constructor() {
+  constructor(collaborationService) {
     this._pool = new Pool();
+    this._collaborationService = collaborationService;
   }
 
   async addNote({
@@ -98,6 +101,11 @@ class NotesService {
     if (note.owner !== owner) {
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
+  }
+
+  async verifyNoteAccess(noteId, userId) {
+    await this.verifyNoteOwner(noteId, userId);
+    await this._collaborationService.verifyCollaborator(noteId, userId);
   }
 }
 

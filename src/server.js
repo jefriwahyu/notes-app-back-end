@@ -23,10 +23,16 @@ const AuthenticationsService = require('./services/postgres/AuthenticationsServi
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
+// collaborations
+const collaborations = require('./api/collaborations');
+const CollaborationsService = require('./services/postgres/CollaborationsService');
+const CollaborationsValidator = require('./validator/collaborations');
+
 const init = async () => {
   const notesService = new NotesService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const collaborationsService = new CollaborationsService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -89,6 +95,15 @@ const init = async () => {
       },
     },
 
+    {
+      plugin: collaborations,
+      options: {
+        collaborationsService,
+        notesService,
+        validator: CollaborationsValidator,
+      },
+    },
+
   ]);
 
   server.ext('onPreResponse', (request, h) => {
@@ -101,6 +116,7 @@ const init = async () => {
         status: 'fail',
         message: response.message,
       });
+      console.error(response);
       newResponse.code(response.statusCode);
       return newResponse;
     }
